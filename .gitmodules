@@ -1,0 +1,7 @@
+[submodule "vendor/xwrap"]
+	path = vendor/xwrap
+	url = https://github.com/levinion/xwrap
+[submodule "vendor/hierro"]
+	path = vendor/hierro
+	url = https://github.com/levinion/hierro
+	branch = kaleido
