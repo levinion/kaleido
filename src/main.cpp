@@ -20,9 +20,9 @@ int main(int argc, char* argv[]) {
   hierro::WindowSettings settings;
   settings.resizable = false;
   settings.floating = true;
-  settings.passthrough = true;
-  settings.transparent = true;
-  settings.decorated = true;
+  settings.passthrough = false;
+  settings.transparent = false;
+  settings.decorated = false;
   settings.title = "kaleido";
   settings.size = { (double)attributes.width, (double)attributes.height };
   settings.position = { (double)0, (double)0 };
@@ -44,10 +44,10 @@ int main(int argc, char* argv[]) {
       }
 
       if (static_cast<bool>(e.mod)) {
-        std::println("mod: {}, press: {}", (int)e.key, (int)e.mod, e.press);
+        std::println("mod: {}, press: {}", (int)e.mod, e.press);
         window.send_key(static_cast<xwrap::Key>(e.mod), e.press);
       }
-      std::println("scancode: {}, press: {}", (int)e.key, (int)e.mod);
+      std::println("scancode: {}, press: {}", (int)e.key, e.press);
       auto cursor = app->cursor_pos();
       window.send_key(static_cast<xwrap::Key>(e.key), e.press);
     })
@@ -81,6 +81,8 @@ int main(int argc, char* argv[]) {
       child.fullscreen(true);
   }
 
+  window.begin_get_image();
+
   app
     ->on_update([&]() {
       block.free_texture();
@@ -89,5 +91,6 @@ int main(int argc, char* argv[]) {
       block.set_texture(image.image);
       return true;
     })
+    ->on_destroy([&]() { window.end_get_image(); })
     ->run();
 }
