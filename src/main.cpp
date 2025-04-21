@@ -39,6 +39,10 @@ int main(int argc, char* argv[]) {
 
   block
     .on_key([&](hierro::KeyEvent e) {
+      if (e.key == hierro::Key::F && e.press) {
+        std::println("frame_rate: {}", app->get_frame_rate());
+      }
+
       if (static_cast<bool>(e.mod)) {
         std::println("mod: {}, press: {}", (int)e.key, (int)e.mod, e.press);
         window.send_key(static_cast<xwrap::Key>(e.mod), e.press);
