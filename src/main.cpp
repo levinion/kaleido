@@ -5,6 +5,7 @@
 #include <hierro/component/block.hpp>
 #include <hierro/window.hpp>
 #include <hierro/backend/sdl.hpp>
+#include "kaleido/kaleido.hpp"
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
@@ -37,10 +38,17 @@ int main(int argc, char* argv[]) {
   block.border_thickness = 0;
   block.radius = 0;
 
+  bool upscaling_on = false;
+
   block
     .on_key([&](hierro::KeyEvent e) {
       if (e.key == hierro::Key::F && e.press) {
         std::println("frame_rate: {}", app->get_frame_rate());
+      }
+
+      if (e.key == hierro::Key::O && e.press) {
+        upscaling_on ? upscaling_on = false : upscaling_on = true;
+        std::println("upscaling: {}", upscaling_on);
       }
 
       if (static_cast<bool>(e.mod)) {
@@ -62,7 +70,11 @@ int main(int argc, char* argv[]) {
       );
     })
     ->on_mouse_move([&](hierro::MouseMoveEvent e) {
-      window.set_cursor_position(e.position.x, e.position.y);
+      auto [width, height] = app->window_size();
+      window.set_cursor_position(
+        e.position.x * attributes.width / width,
+        e.position.y * attributes.height / height
+      );
       // window.set_cursor_relative_position(e.xrel, e.yrel);
     })
     ->on_mouse_wheel([&](hierro::MouseWheelEvent e) {
@@ -86,9 +98,9 @@ int main(int argc, char* argv[]) {
   app
     ->on_update([&]() {
       block.free_texture();
-      auto image = window.get_image();
-      // image.show();
-      block.set_texture(image.image);
+      auto src = window.get_image();
+      // auto image = upscaling_on ? kaleido::process_image(src, 2) : src;
+      block.set_texture(src.pixels, src.width, src.height);
       return true;
     })
     ->on_destroy([&]() { window.end_get_image(); })
