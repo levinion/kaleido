@@ -18,7 +18,7 @@
 
 ## ⚙️ Features
 
-- **Universal Shader Support**: Load any [MPV](https://github.com/mpv-player/mpv)-compatible GLSL shader (e.g., [Anime4K](https://github.com/bloc97/Anime4K), [ArtCNN](https://github.com/lltcggie/waifu2x-caffe), [FSRCNN](https://github.com/HighVoltageRocknRoll/FSRCNN-TensorFlow)).
+- **Universal Shader Support**: Load any [MPV](https://github.com/mpv-player/mpv)-compatible GLSL shader (e.g., [Anime4K](https://github.com/bloc97/Anime4K), [ArtCNN](https://github.com/Artoriuz/ArtCNN), [FSRCNN](https://github.com/igv/FSRCNN-TensorFlow)).
 - **X11 Compatibility**: To ensure correct full-screen behavior without interference from the window manager, Kaleido requires either a second physical monitor or a virtual display (e.g., via [Xvfb](https://www.x.org/releases/X11R7.6/doc/man/man1/Xvfb.1.xhtml)).
 - **Extensible Platform Support**: Planned Windows and Wayland backends, plus headless streaming via [SPICE](https://www.spice-space.org), VNC, etc.\
 
