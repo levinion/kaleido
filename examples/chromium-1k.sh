@@ -2,7 +2,7 @@
 
 display=3
 
-# environment for 1k screen
+# environment for 1k screen, skip it if you are in 1k:
 export GDK_DPI_SCALE=-1
 export GDK_SCALE=1
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
