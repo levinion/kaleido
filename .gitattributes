@@ -1,2 +1,1 @@
-assets/* linguist-vendored
-examples/* linguist-vendored
+*.glsl linguist-detectable=false
