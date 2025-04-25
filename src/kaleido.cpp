@@ -5,9 +5,10 @@
 #include "hierro/app.hpp"
 
 namespace kaleido {
-Kaleido::Kaleido(const Configuration& conf) {
+Kaleido::Kaleido(Configuration&& conf) {
   // init x window
-  this->display = xwrap::XwrapDisplay(conf.display);
+  this->conf = conf;
+  this->display = xwrap::XwrapDisplay(this->conf.display);
   this->window = xwrap::XwrapWindow::from_root(display);
   auto attributes = window.get_attributes();
 
@@ -39,57 +40,20 @@ Kaleido::Kaleido(const Configuration& conf) {
       if (e.key == hierro::Key::F && e.press) {
         spdlog::info("frame_rate: {}", app->get_frame_rate());
       }
-
-      if (e.key == hierro::Key::O && e.press) {
+      if (e.key == hierro::Key::M && e.press
+          && e.is_pressed(hierro::Key::LCtrl)) {
         upscaling_on ? upscaling_on = false : upscaling_on = true;
         spdlog::info("upscaling: {}", upscaling_on);
         video->send_command(
-          { "change-list",
-            "glsl-shaders",
-            "toggle",
-            "/home/maruka/Downloads/Anime4K_v4.0/Anime4K_Clamp_Highlights.glsl" }
-        );
-        video->send_command(
-          { "change-list",
-            "glsl-shaders",
-            "toggle",
-            "/home/maruka/Downloads/Anime4K_v4.0/Anime4K_Restore_CNN_VL.glsl" }
-        );
-        video->send_command(
-          { "change-list",
-            "glsl-shaders",
-            "toggle",
-            "/home/maruka/Downloads/Anime4K_v4.0/Anime4K_Upscale_CNN_x2_VL.glsl" }
-        );
-        video->send_command(
-          { "change-list",
-            "glsl-shaders",
-            "toggle",
-            "/home/maruka/Downloads/Anime4K_v4.0/Anime4K_AutoDownscalePre_x2.glsl" }
-        );
-        video->send_command(
-          { "change-list",
-            "glsl-shaders",
-            "toggle",
-            "/home/maruka/Downloads/Anime4K_v4.0/Anime4K_AutoDownscalePre_x4.glsl" }
-        );
-
-        video->send_command(
-          { "change-list",
-            "glsl-shaders",
-            "toggle",
-            "/home/maruka/Downloads/Anime4K_v4.0/Anime4K_Upscale_CNN_x2_M.glsl" }
-        );
-        video->send_command(
           { "show-text",
-            fmt::format("upscale {}", upscaling_on ? "on" : "off"),
+            fmt::format("upscaling mode {}", upscaling_on ? "on" : "off"),
             "2000" }
         );
-      }
-
-      if (static_cast<bool>(e.mod)) {
-        spdlog::debug("mod: {}, press: {}", (int)e.mod, e.press);
-        window.send_key(static_cast<xwrap::Key>(e.mod), e.press);
+        for (auto& shader : this->conf.shaders) {
+          video->send_command(
+            { "change-list", "glsl-shaders", "toggle", shader }
+          );
+        }
       }
       spdlog::debug("scancode: {}, press: {}", (int)e.key, e.press);
       window.send_key(static_cast<xwrap::Key>(e.key), e.press);
@@ -130,7 +94,6 @@ Kaleido::Kaleido(const Configuration& conf) {
   app
     ->on_update([&]() {
       auto im = window.get_image();
-      spdlog::debug("send frame: {}", im.height * im.width * 4);
       video->push_frame(im.pixels, im.height * im.width * 4);
       return true;
     })
@@ -141,6 +104,9 @@ Kaleido::Kaleido(const Configuration& conf) {
 }
 
 void Kaleido::run() {
-  app->run();
+  if (auto r = app->run(); !r) {
+    spdlog::error("{}", r.error());
+    exit(1);
+  }
 }
 } // namespace kaleido

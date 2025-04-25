@@ -22,6 +22,6 @@ int main(int argc, char** argv) {
     ->check(CLI::ExistingFile);
   CLI11_PARSE(cli, argc, argv);
 
-  auto kaleido = kaleido::Kaleido(conf);
+  auto kaleido = kaleido::Kaleido(std::move(conf));
   kaleido.run();
 }

@@ -7,7 +7,7 @@
 namespace kaleido {
 class Kaleido {
 public:
-  Kaleido(const Configuration& conf);
+  Kaleido(Configuration&& conf);
   void run();
 
 private:
@@ -17,5 +17,6 @@ private:
   Display* display;
   hierro::Application* app;
   bool upscaling_on = false;
+  Configuration conf;
 };
 } // namespace kaleido
