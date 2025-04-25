@@ -6,7 +6,7 @@ run:
 debug:
   cmake -B build -DCMAKE_BUILD_TYPE=Debug
   just build
-  gdb -q ./build/$(cat build/CMakeCache.txt | grep CMAKE_PROJECT_NAME | awk -F '=' '{print $2}')
+  gdb -q --args ./build/$(cat build/CMakeCache.txt | grep CMAKE_PROJECT_NAME | awk -F '=' '{print $2}')
 
 init:
   cmake -B build
