@@ -18,6 +18,7 @@ xvfb-run -n $display --server-args="-screen 0 1920x1080x24" chromium &
 sleep 5
 
 kaleido :$display \
+  --frame-limit 160 \
   --shader "../assets/shaders/Anime4K_v4.0/Anime4K_Clamp_Highlights.glsl" \
   --shader "../assets/shaders/Anime4K_v4.0/Anime4K_Restore_CNN_VL.glsl" \
   --shader "../assets/shaders/Anime4K_v4.0/Anime4K_Upscale_CNN_x2_VL.glsl" \
