@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   cli.add_option("display", conf.display, "X11 display")->required();
   cli.add_option("-s,--shader", conf.shaders, "glsl shaders")
     ->check(CLI::ExistingFile);
-  cli.add_option("-p,--proset", conf.current_preset, "preset to use");
+  cli.add_option("-p,--preset", conf.current_preset, "preset to use");
   CLI11_PARSE(cli, argc, argv);
 
   if (auto kaleido = kaleido::Kaleido::init(std::move(conf)); !kaleido) {
