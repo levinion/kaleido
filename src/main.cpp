@@ -18,10 +18,18 @@ int main(int argc, char** argv) {
 
   auto cli = CLI::App { "Upscaler GUI for Linux", "kaleido" };
   cli.add_option("display", conf.display, "X11 display")->required();
-  cli.add_option("--shader", conf.shaders, "preset of a group of glsl files")
+  cli.add_option("-s,--shader", conf.shaders, "glsl shaders")
     ->check(CLI::ExistingFile);
+  cli.add_option("-p,--proset", conf.current_preset, "preset to use");
   CLI11_PARSE(cli, argc, argv);
 
-  auto kaleido = kaleido::Kaleido(std::move(conf));
-  kaleido.run();
+  if (auto kaleido = kaleido::Kaleido::init(std::move(conf)); !kaleido) {
+    spdlog::error("{}", kaleido.error());
+    exit(1);
+  } else {
+    if (auto r = kaleido.value()->run(); !r) {
+      spdlog::error("{}", kaleido.error());
+      exit(1);
+    }
+  }
 }

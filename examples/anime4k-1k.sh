@@ -13,7 +13,7 @@ export QT_SCALE_FACTOR=1
 # DISPLAY=:3 chromium > /dev/null 2>&1 &
 
 # or just:
-xvfb-run -n $display --server-args="-screen 0 1920x1080x24" chromium >/dev/null 2>&1 &
+xvfb-run -n $display --server-args="-screen 0 1920x1080x24" chromium &
 
 sleep 5
 

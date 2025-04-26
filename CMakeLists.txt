@@ -21,10 +21,10 @@ target_compile_options(${name} PRIVATE
     # -Wextra
     # -Wpedantic
     # -fsanitize=address
-    # -g
+#     -g
 )
 
-# include header
+# # include header
 target_include_directories(${name} PUBLIC include/)
 
 find_package(PkgConfig REQUIRED)

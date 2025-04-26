@@ -18,5 +18,6 @@ clean:
   rm -rf build
 
 install:
+  cmake -B build -DCMAKE_BUILD_TYPE=Release
   just build
   cp ./build/kaleido ~/.local/bin

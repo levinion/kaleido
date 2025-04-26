@@ -1,17 +1,55 @@
 #include "kaleido/kaleido.hpp"
 #include <mpv/client.h>
 #include "kaleido/config.hpp"
+#include "kaleido/result.hpp"
 #include "spdlog/spdlog.h"
 #include "hierro/app.hpp"
 
 namespace kaleido {
-Kaleido::Kaleido(Configuration&& conf) {
-  // init x window
-  this->conf = conf;
-  this->display = xwrap::XwrapDisplay(this->conf.display);
-  this->window = xwrap::XwrapWindow::from_root(display);
-  auto attributes = window.get_attributes();
+KaleidoResult<std::unique_ptr<Kaleido>> Kaleido::init(Configuration&& conf) {
+  if (!conf.current_preset.empty() && conf.shaders.empty()) {
+    conf.shaders = conf.presets.get_preset(conf.current_preset);
+  }
 
+  auto kaleido = std::make_unique<Kaleido>();
+
+  // init x window
+  kaleido->conf = conf;
+  kaleido->display = xwrap::XwrapDisplay(kaleido->conf.display);
+  kaleido->window = xwrap::XwrapWindow::from_root(kaleido->display);
+  auto attributes = kaleido->window.get_attributes();
+
+  kaleido_check(kaleido->init_hierro(attributes.width, attributes.height));
+  kaleido->init_video();
+
+  return kaleido;
+}
+
+KaleidoResult<void> Kaleido::run() {
+  // set fullscreen
+  for (auto& child : window.get_children()) {
+    auto child_attr = child.get_attributes();
+    auto root_attr = window.get_attributes();
+    if (child_attr.width != root_attr.width
+        || child_attr.height != root_attr.height || child_attr.x != root_attr.x
+        || child_attr.y != root_attr.y)
+      child.fullscreen(true);
+  }
+
+  app
+    ->on_update([&]() {
+      auto im = window.get_image();
+      video->push_frame(im.pixels, im.height * im.width * 4);
+      return true;
+    })
+    ->on_render([&]() { video->render(); })
+    ->on_destroy([&]() { window.end_get_image(); });
+
+  window.begin_get_image();
+  return app->run();
+}
+
+KaleidoResult<void> Kaleido::init_hierro(int width, int height) {
   // init app window
   app = hierro::Application::get_instance();
   hierro::WindowSettings settings;
@@ -21,16 +59,15 @@ Kaleido::Kaleido(Configuration&& conf) {
   settings.transparent = false;
   settings.decorated = false;
   settings.title = "kaleido";
-  settings.size = { (double)attributes.width, (double)attributes.height };
+  settings.size = { (double)width, (double)height };
   settings.position = { (double)0, (double)0 };
   settings.fullscreen = true;
-  if (!app->init<hierro::SDLBackend>(settings)) {
-    spdlog::error("window init failed");
-    exit(1);
-  }
+  return app->init<hierro::SDLBackend>(settings);
+}
 
+void Kaleido::init_video() {
   // init video widget
-  this->video = app->add_child<hierro::Video>();
+  video = app->add_child<hierro::Video>();
   this->video->set_size(1, 1);
   this->video->set_position(0, 1);
 
@@ -81,32 +118,6 @@ Kaleido::Kaleido(Configuration&& conf) {
       window.send_mouse_wheel(e.y);
     });
 
-  // set fullscreen
-  for (auto& child : window.get_children()) {
-    auto child_attr = child.get_attributes();
-    auto root_attr = window.get_attributes();
-    if (child_attr.width != root_attr.width
-        || child_attr.height != root_attr.height || child_attr.x != root_attr.x
-        || child_attr.y != root_attr.y)
-      child.fullscreen(true);
-  }
-
-  app
-    ->on_update([&]() {
-      auto im = window.get_image();
-      video->push_frame(im.pixels, im.height * im.width * 4);
-      return true;
-    })
-    ->on_render([&]() { video->render(); })
-    ->on_destroy([&]() { window.end_get_image(); });
-
-  window.begin_get_image();
-}
-
-void Kaleido::run() {
-  if (auto r = app->run(); !r) {
-    spdlog::error("{}", r.error());
-    exit(1);
-  }
+  this->app->set_focus(video);
 }
 } // namespace kaleido
