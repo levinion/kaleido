@@ -4,7 +4,6 @@
 [submodule "vendor/hierro"]
 	path = vendor/hierro
 	url = https://github.com/levinion/hierro
-	branch = kaleido
 [submodule "vendor/tomlplusplus"]
 	path = vendor/tomlplusplus
 	url = https://github.com/marzer/tomlplusplus.git

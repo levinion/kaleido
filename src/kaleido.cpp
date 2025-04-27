@@ -43,7 +43,10 @@ KaleidoResult<void> Kaleido::run() {
       return true;
     })
     ->on_render([&]() { video->render(); })
-    ->on_destroy([&]() { window.end_get_image(); });
+    ->on_destroy([&]() {
+      window.end_get_image();
+      video->terminate();
+    });
 
   window.begin_get_image();
   return app->run();
@@ -62,6 +65,7 @@ KaleidoResult<void> Kaleido::init_hierro(int width, int height) {
   settings.size = { (double)width, (double)height };
   settings.position = { (double)0, (double)0 };
   settings.fullscreen = true;
+  settings.frame_limit = this->conf.frame_limit;
   return app->init<hierro::SDLBackend>(settings);
 }
 
@@ -77,8 +81,7 @@ void Kaleido::init_video() {
       if (e.key == hierro::Key::F && e.press) {
         spdlog::info("frame_rate: {}", app->get_frame_rate());
       }
-      if (e.key == hierro::Key::M && e.press
-          && e.is_pressed(hierro::Key::LCtrl)) {
+      if (e.match(hierro::Key::LCtrl, hierro::Key::M) && e.press) {
         upscaling_on ? upscaling_on = false : upscaling_on = true;
         spdlog::info("upscaling: {}", upscaling_on);
         video->send_command(

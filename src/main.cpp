@@ -21,6 +21,7 @@ int main(int argc, char** argv) {
   cli.add_option("-s,--shader", conf.shaders, "glsl shaders")
     ->check(CLI::ExistingFile);
   cli.add_option("-p,--preset", conf.current_preset, "preset to use");
+  cli.add_option("-l,--frame-limit", conf.frame_limit, "max frame rate");
   CLI11_PARSE(cli, argc, argv);
 
   if (auto kaleido = kaleido::Kaleido::init(std::move(conf)); !kaleido) {

@@ -11,6 +11,7 @@ public:
   std::vector<std::string> shaders;
   PresetList presets;
   std::string current_preset;
+  std::optional<double> frame_limit;
 
 private:
 };
