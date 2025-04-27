@@ -44,8 +44,8 @@ KaleidoResult<void> Kaleido::run() {
     })
     ->on_render([&]() { video->render(); })
     ->on_destroy([&]() {
-      window.end_get_image();
       video->terminate();
+      window.end_get_image();
     });
 
   window.begin_get_image();
