@@ -1,9 +1,11 @@
 #include "kaleido/kaleido.hpp"
 #include <mpv/client.h>
+#include "hierro/utils/data.hpp"
+#include "hierro/widget/video.hpp"
 #include "kaleido/config.hpp"
 #include "kaleido/result.hpp"
 #include "spdlog/spdlog.h"
-#include "hierro/app.hpp"
+#include "hierro/app/app.hpp"
 
 namespace kaleido {
 KaleidoResult<std::unique_ptr<Kaleido>> Kaleido::init(Configuration&& conf) {
@@ -39,7 +41,7 @@ KaleidoResult<void> Kaleido::run() {
   app
     ->on_update([&]() {
       auto im = window.get_image();
-      video->push_frame(im.pixels, im.height * im.width * 4);
+      video->update((unsigned char*)im.pixels, im.height * im.width * 4);
       return true;
     })
     ->on_render([&]() { video->render(); })
@@ -62,8 +64,8 @@ KaleidoResult<void> Kaleido::init_hierro(int width, int height) {
   settings.transparent = false;
   settings.decorated = false;
   settings.title = "kaleido";
-  settings.size = { (double)width, (double)height };
-  settings.position = { (double)0, (double)0 };
+  settings.size = { width, height };
+  settings.position = { 0, 0 };
   settings.fullscreen = true;
   settings.frame_limit = this->conf.frame_limit;
   return app->init<hierro::SDLBackend>(settings);
@@ -71,7 +73,14 @@ KaleidoResult<void> Kaleido::init_hierro(int width, int height) {
 
 void Kaleido::init_video() {
   // init video widget
+  auto attr = window.get_attributes();
   video = app->add_child<hierro::Video>();
+  hierro::VideoSettings settings;
+  settings.flip_y = true;
+  settings.gl_format = GL_BGRA;
+  settings.format = "bgra";
+  settings.frame_size = { attr.width, attr.height };
+  video->init(settings);
   this->video->set_size(1, 1);
   this->video->set_position(0, 1);
 

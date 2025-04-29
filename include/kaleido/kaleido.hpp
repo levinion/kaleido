@@ -1,7 +1,7 @@
 #include <X11/Xlib.h>
 #include "kaleido/config.hpp"
 #include "kaleido/result.hpp"
-#include <hierro/app.hpp>
+#include <hierro/app/app.hpp>
 #include <xwrap/xwrap.hpp>
 
 namespace kaleido {

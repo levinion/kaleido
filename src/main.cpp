@@ -1,10 +1,6 @@
 #include <CLI/CLI.hpp>
 #include <xwrap/xwrap.hpp>
-#include <hierro/app.hpp>
-#include <hierro/component/block.hpp>
-#include <hierro/window.hpp>
-#include <hierro/backend/sdl.hpp>
-#include <hierro/widget/video.hpp>
+#include <hierro/hierro.hpp>
 #include <spdlog/spdlog.h>
 #include <spdlog/cfg/env.h>
 #include "CLI/CLI.hpp"
