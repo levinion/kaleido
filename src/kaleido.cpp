@@ -74,23 +74,21 @@ KaleidoResult<void> Kaleido::init_hierro(int width, int height) {
 void Kaleido::init_video() {
   // init video widget
   auto attr = window.get_attributes();
-  video = app->add_child<hierro::Video>();
+
   hierro::VideoSettings settings;
   settings.flip_y = true;
   settings.gl_format = GL_BGRA;
   settings.format = "bgra";
   settings.frame_size = { attr.width, attr.height };
-  video->init(settings);
+
+  video = app->add_child<hierro::Video>()->init(settings);
   this->video->set_size(1, 1);
   this->video->set_position(0, 1);
 
-  // key mapping
   video
     ->on_key([&](hierro::KeyEvent e) {
-      if (e.key == hierro::Key::F && e.press) {
-        spdlog::info("frame_rate: {}", app->get_frame_rate());
-      }
-      if (e.match(hierro::Key::LCtrl, hierro::Key::M) && e.press) {
+      // key mapping
+      if (e.match({ hierro::Key::LCtrl, hierro::Key::M }) && e.press) {
         upscaling_on ? upscaling_on = false : upscaling_on = true;
         spdlog::info("upscaling: {}", upscaling_on);
         video->send_command(
@@ -104,18 +102,10 @@ void Kaleido::init_video() {
           );
         }
       }
-      spdlog::debug("scancode: {}, press: {}", (int)e.key, e.press);
       window.send_key(static_cast<xwrap::Key>(e.key), e.press);
     })
     ->on_click([&](hierro::ClickEvent e) {
       window.send_button(static_cast<xwrap::MouseButton>(e.button), e.press);
-      spdlog::debug(
-        "button: {}, press: {} ; cursor: {}:{}",
-        (int)e.button,
-        (bool)e.press,
-        e.position.x,
-        e.position.y
-      );
     })
     ->on_mouse_move([&](hierro::MouseMoveEvent e) {
       auto [width, height] = app->window_size();
@@ -126,7 +116,6 @@ void Kaleido::init_video() {
       );
     })
     ->on_mouse_wheel([&](hierro::MouseWheelEvent e) {
-      spdlog::debug("mouse wheel: {}", e.y);
       window.send_mouse_wheel(e.y);
     });
 
