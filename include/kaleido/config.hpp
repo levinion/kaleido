@@ -12,6 +12,7 @@ public:
   PresetList presets;
   std::string current_preset;
   std::optional<double> frame_limit;
+  bool vsync = false;
 
 private:
 };

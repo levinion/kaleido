@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
     ->check(CLI::ExistingFile);
   cli.add_option("-p,--preset", conf.current_preset, "preset to use");
   cli.add_option("-l,--frame-limit", conf.frame_limit, "max frame rate");
+  cli.add_flag("-v,--vsync", conf.vsync, "enable vsync");
   CLI11_PARSE(cli, argc, argv);
 
   if (auto kaleido = kaleido::Kaleido::init(std::move(conf)); !kaleido) {

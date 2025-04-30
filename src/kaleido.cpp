@@ -68,6 +68,7 @@ KaleidoResult<void> Kaleido::init_hierro(int width, int height) {
   settings.position = { 0, 0 };
   settings.fullscreen = true;
   settings.frame_limit = this->conf.frame_limit;
+  settings.vsync = this->conf.vsync;
   return app->init<hierro::SDLBackend>(settings);
 }
 
@@ -81,7 +82,7 @@ void Kaleido::init_video() {
   settings.format = "bgra";
   settings.frame_size = { attr.width, attr.height };
 
-  video = app->add_child<hierro::Video>()->init(settings);
+  video = app->add_child<hierro::Video>(settings);
   this->video->set_size(1, 1);
   this->video->set_position(0, 1);
 
