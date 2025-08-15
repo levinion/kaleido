@@ -4,6 +4,3 @@
 [submodule "vendor/hierro"]
 	path = vendor/hierro
 	url = https://github.com/levinion/hierro
-[submodule "vendor/tomlplusplus"]
-	path = vendor/tomlplusplus
-	url = https://github.com/marzer/tomlplusplus.git

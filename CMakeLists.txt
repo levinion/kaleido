@@ -26,19 +26,21 @@ target_compile_options(${name} PRIVATE
 
 # # include header
 target_include_directories(${name} PUBLIC include/)
-
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(spdlog REQUIRED spdlog)
-target_link_libraries(${name} PRIVATE ${spdlog_LIBRARIES})
+pkg_check_modules(SPDLOG REQUIRED spdlog)
+target_link_libraries(${name} PRIVATE ${SPDLOG_LIBRARIES})
+target_link_directories(${name} PRIVATE ${SPDLOG_INCLUDE_DIRS})
 
-pkg_check_modules(cli11 REQUIRED CLI11)
-target_link_libraries(${name} PRIVATE ${cli11_LIBRARIES})
+pkg_check_modules(CLI11 REQUIRED CLI11)
+target_link_libraries(${name} PRIVATE ${CLI11_LIBRARIES})
+target_link_directories(${name} PRIVATE ${CLI11_INCLUDE_DIRS})
 
-include_directories(/usr/include/freetype2)
+pkg_check_modules(TOMLPLUSPLUS REQUIRED tomlplusplus)
+target_link_libraries(${name} PRIVATE ${TOMLPLUSPLUS_LIBRARIES})
+target_link_directories(${name} PRIVATE ${TOMLPLUSPLUS_INCLUDE_DIRS})
 
 add_subdirectory(./vendor/hierro)
 add_subdirectory(./vendor/xwrap)
-add_subdirectory(./vendor/tomlplusplus)
-target_link_libraries(${name} PUBLIC hierro xwrap tomlplusplus)
+target_link_libraries(${name} PUBLIC hierro xwrap)
 
